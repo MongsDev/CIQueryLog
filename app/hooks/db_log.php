@@ -83,6 +83,10 @@ class DbLog
 			$row = str_replace('= ', '=', $row);
 			$row = preg_replace("/='.*'/", "=''", $row);
 			$row = preg_replace("/=[0-9]+/", "=''", $row);
+			
+			$row = preg_replace("/'[^']*'/", "''", $row);
+			$row = preg_replace("/, [0-9]*,/", ' ', $row);
+			$row = preg_replace("/\([0-9]*,/", '(,', $row);
 
 			$row = trim($row);
 
