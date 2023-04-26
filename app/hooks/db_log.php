@@ -75,7 +75,7 @@ class DbLog
 		$output = array();
 
 		foreach($query as $row) {
-      // 쿼리 파라미터 제거, 중복 제거
+      			// 쿼리 파라미터 제거, 중복 제거
 			$row = preg_replace("/(\r\n|\t|\s)/", ' ', trim($row));
 			$row = preg_replace('/\s\s+/', ' ', $row);
 			$row = str_replace('"', "'", $row);
