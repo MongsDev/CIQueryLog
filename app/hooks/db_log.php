@@ -104,4 +104,92 @@ class DbLog
 
 		return $output;
 	}
+	
+	function saveQueryLog()
+	{
+		$logdb = $this->load->database('logdb', true);
+
+		$list = db_list("
+			select
+				no, url, `query`
+			from api_query_log_sum_end
+			limit 10
+		", false, $logdb);
+
+		foreach($list as $row) {
+			if(empty($row['query'])) {
+				continue;
+			}
+
+			$query = trim($row['query']);
+			$arr = explode("\n", $query);
+			$out = array();
+			foreach($arr as $line) {
+				if(empty($line)) {
+					continue;
+				}
+				$out[] = $line;
+			}
+
+			$out = array_unique($out);
+			asort($out);
+			$query = implode("\n", $out);
+			$query = db_escape($query, $logdb);
+			$logdb->query("
+				replace into api_query_log_sum_uniqe set
+					`url` = '{$row['url']}',
+					`query` = '$query'
+			");
+		}
+
+		echo 'ok';
+		exit;
+	}
+
+	function updateQueryLog()
+	{
+		$logdb = $this->load->database('logdb', true);
+
+		$list = db_list("
+			select
+				no, url, `query`
+			from api_query_log_sum_uniqe
+			where result > 0
+			limit 300
+		", false, $logdb);
+
+		foreach($list as $row) {
+			if(empty($row['query'])) {
+				continue;
+			}
+
+			$query = trim($row['query']);
+			$arr = explode("\n", $query);
+			$out = array();
+			foreach($arr as $line) {
+				if(empty($line)) {
+					continue;
+				}
+
+				$line = preg_replace("/'[^']*'/", "''", $line);
+				$line = preg_replace("/, [0-9]*,/", ' ', $line);
+				$line = preg_replace("/\([0-9]*,/", '(,', $line);
+				$out[] = $line;
+			}
+
+			$out = array_unique($out);
+			asort($out);
+			$query = implode("\n", $out);
+			$query = db_escape($query, $logdb);
+			$logdb->query("
+				update api_query_log_sum_uniqe set
+					`query` = '$query',
+					result = 1
+				where no = '{$row['no']}'
+			");
+		}
+
+		echo 'ok';
+		exit;
+	}
 }
