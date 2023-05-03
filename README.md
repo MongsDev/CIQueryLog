@@ -15,3 +15,8 @@ CREATE TABLE `query_log` (
   `wdate` datetime NOT NULL COMMENT 'wdate',
   PRIMARY KEY (`no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='쿼리로그테이블'
+
+
+
+파일로 로깅시 query 함수 사용
+/system/database/DB_driver.php
